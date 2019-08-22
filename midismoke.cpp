@@ -1,7 +1,7 @@
 #include "glew.h"
 #include "glfw3.h"
 
-#include "RtMidi.h"
+//#include "RtMidi.h"
 
 #include <vector>
 #include <utility>
@@ -112,7 +112,7 @@ GLuint addProgram;
 GLuint simulationFramebuffer;
 GLuint renderingFramebuffer;
 
-RtMidiIn *midiIn;
+//RtMidiIn *midiIn;
 
 float projectionMatrix[16];
 
@@ -311,15 +311,20 @@ void update(double time, double deltaTime) {
 
 	float stamp;
 	std::vector<unsigned char> message;
-	while (stamp = midiIn->getMessage(&message)) {
-		unsigned int nBytes = message.size();
+	static int i = 0;
+	//while (stamp = midiIn->getMessage(&message)) {
+	while ( i++ % 30 == 0 ) {
+		//unsigned int nBytes = message.size();
 
-		unsigned char status = message.at(0);
+		//unsigned char status = message.at(0);
+		unsigned char status = 144;
 
 		if (status == 144 || status == 176 || status == 128) {
-			unsigned char noteIndex = message.at(1);
+			//unsigned char noteIndex = message.at(1);
+			//unsigned char velocity = message.at(2);
 
-			unsigned char velocity = message.at(2);
+			unsigned char noteIndex = i % 100;
+			unsigned char velocity = 100;
 
 			if (status == 176) { //pedal
 				if (velocity >= 64) {
@@ -598,15 +603,15 @@ int main() {
 
 	glewInit();
 
-	midiIn = new RtMidiIn();
+	//midiIn = new RtMidiIn();
 
-	unsigned int nPorts = midiIn->getPortCount();
-	if (nPorts == 0) {
-		delete midiIn;
-		return 0;
-	}
+	//unsigned int nPorts = midiIn->getPortCount();
+	//if (nPorts == 0) {
+	//	delete midiIn;
+	//	return 0;
+	//}
 
-	midiIn->openPort();
+	//midiIn->openPort();
 
 	setup();
 
@@ -628,7 +633,7 @@ int main() {
 
 	glfwTerminate();
 
-	delete midiIn;
+	//delete midiIn;
 
 	return 0;
 }
