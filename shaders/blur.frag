@@ -1,4 +1,3 @@
-#version 440
 
 uniform sampler2D u_input;
 uniform vec2 u_resolution;

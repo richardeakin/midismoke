@@ -59,6 +59,8 @@ GLuint buildShader(const GLenum type, const char* source) {
 		std::vector<char> errorLog(maxLength);
 		glGetShaderInfoLog(shader, maxLength, &maxLength, &errorLog[0]);
 
+		std::cout << "error compiling shader:\n" << source << std::endl;
+
 		for (auto c : errorLog) {
 			std::cout << c;
 		}

@@ -1,4 +1,3 @@
-#version 440
 
 precision highp float;
 
