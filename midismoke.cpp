@@ -2,6 +2,7 @@
 #include "glfw3.h"
 
 //#include "RtMidi.h"
+#include "Markers.h"
 
 #include <vector>
 #include <utility>
@@ -9,6 +10,9 @@
 #include "utilities.h"
 
 #include <string>
+#include <iostream>
+
+int ph::Marker::id = 0;
 
 const double PI = 3.14159265358979323846264338327950;
 
@@ -313,34 +317,18 @@ void update(double time, double deltaTime) {
 	std::vector<unsigned char> message;
 	static int i = 0;
 	//while (stamp = midiIn->getMessage(&message)) {
-	while ( i++ % 30 == 0 ) {
+	if( i++ % 30 == 0 ) {
 		//unsigned int nBytes = message.size();
 
 		//unsigned char status = message.at(0);
 		unsigned char status = 144;
 
-		if (status == 144 || status == 176 || status == 128) {
+		if (status == 144) {
 			//unsigned char noteIndex = message.at(1);
 			//unsigned char velocity = message.at(2);
 
 			unsigned char noteIndex = i % 100;
 			unsigned char velocity = 100;
-
-			if (status == 176) { //pedal
-				if (velocity >= 64) {
-					pedalPressed = true;
-				}
-				else {
-					pedalPressed = false;
-
-					for (int i = 0; i < 256; ++i) {
-						Note& note = notes[i];
-						if (!note.pressed) { //if this note is not being pressed we can stop it sounding
-							note.on = false;
-						}
-					}
-				}
-			}
 
 			if (status == 144 && velocity > 0) { //note pressed
 				Note& note = notes[noteIndex];
@@ -376,7 +364,13 @@ void update(double time, double deltaTime) {
 			float positionY = SPLAT_Y;
 			float positionZ = static_cast<float>(SIMULATION_DEPTH) / 2.0;
 
+			if( note.justPressed ) {
+				std::cout << __FUNCTION__ << " | noteName: " << noteName << ", pos: [" << positionX << ", " << positionY << ", " << positionZ << "]" << std::endl;
+			}
+
+			ph::Marker::push( "add temp" );
 			add(temperatureTextureA, positionX, positionY, positionZ, SPLAT_RADIUS, note.justPressed ? JUST_PRESSED_TEMPERATURE_SCALE * noteIntensity : NORMAL_TEMPERATURE_SCALE * noteIntensity * deltaTime, 0.0, 0.0, 0.0);
+			ph::Marker::pop();
 
 			float r, g, b;
 			hsvToRGB((static_cast<float>(i) * NOTE_HUE_SCALE + NOTE_HUE_OFFSET), DYE_SATURATION, DYE_VALUE, r, g, b);
@@ -384,7 +378,9 @@ void update(double time, double deltaTime) {
 			//add dye
 			float scale = note.justPressed ? JUST_PRESSED_DYE_SCALE * noteIntensity : NORMAL_DYE_SCALE * noteIntensity * deltaTime;
 
+			ph::Marker::push( "add dye" );
 			add(dyeTextureA, positionX, positionY, positionZ, SPLAT_RADIUS, r * scale, g * scale, b * scale, 0.0);
+			ph::Marker::pop();
 
 			note.justPressed = false;
 		}
