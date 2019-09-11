@@ -215,19 +215,31 @@ void setup() {
 	float* emptyData = createEmptyArray(SIMULATION_WIDTH * SIMULATION_HEIGHT * SIMULATION_DEPTH * 4);
 
 	velocityTextureA = build3DTexture(GL_RGBA16F, GL_RGBA, SIMULATION_WIDTH, SIMULATION_HEIGHT, SIMULATION_DEPTH, GL_HALF_FLOAT, emptyData, GL_CLAMP_TO_EDGE, GL_LINEAR);
+	glObjectLabel( GL_TEXTURE, velocityTextureA, strlen( "vel A" ), "vel A" );
 	velocityTextureB = build3DTexture(GL_RGBA16F, GL_RGBA, SIMULATION_WIDTH, SIMULATION_HEIGHT, SIMULATION_DEPTH, GL_HALF_FLOAT, emptyData, GL_CLAMP_TO_EDGE, GL_LINEAR);
+	glObjectLabel( GL_TEXTURE, velocityTextureB, strlen( "vel B" ), "vel B" );
 	dyeTextureA = build3DTexture(GL_RGBA16F, GL_RGBA, SIMULATION_WIDTH, SIMULATION_HEIGHT, SIMULATION_DEPTH, GL_HALF_FLOAT, emptyData, GL_CLAMP_TO_EDGE, GL_LINEAR);
+	glObjectLabel( GL_TEXTURE, dyeTextureA, strlen( "dye A" ), "dye A" );
 	dyeTextureB = build3DTexture(GL_RGBA16F, GL_RGBA, SIMULATION_WIDTH, SIMULATION_HEIGHT, SIMULATION_DEPTH, GL_HALF_FLOAT, emptyData, GL_CLAMP_TO_EDGE, GL_LINEAR);
+	glObjectLabel( GL_TEXTURE, dyeTextureB, strlen( "dye B" ), "dye B" );
 	temperatureTextureA = build3DTexture(GL_RGBA16F, GL_RGBA, SIMULATION_WIDTH, SIMULATION_HEIGHT, SIMULATION_DEPTH, GL_HALF_FLOAT, emptyData, GL_CLAMP_TO_EDGE, GL_LINEAR);
+	glObjectLabel( GL_TEXTURE, temperatureTextureA, strlen( "temperature A" ), "temperature A" );
 	temperatureTextureB = build3DTexture(GL_RGBA16F, GL_RGBA, SIMULATION_WIDTH, SIMULATION_HEIGHT, SIMULATION_DEPTH, GL_HALF_FLOAT, emptyData, GL_CLAMP_TO_EDGE, GL_LINEAR);
+	glObjectLabel( GL_TEXTURE, temperatureTextureB, strlen( "temperature B" ), "temperature B" );
 	divergenceTexture = build3DTexture(GL_RGBA16F, GL_RGBA, SIMULATION_WIDTH, SIMULATION_HEIGHT, SIMULATION_DEPTH, GL_HALF_FLOAT, emptyData, GL_CLAMP_TO_EDGE, GL_LINEAR);
+	glObjectLabel( GL_TEXTURE, divergenceTexture, strlen( "divergence" ), "divergence" );
 	pressureTextureA = build3DTexture(GL_RGBA16F, GL_RGBA, SIMULATION_WIDTH, SIMULATION_HEIGHT, SIMULATION_DEPTH, GL_HALF_FLOAT, emptyData, GL_CLAMP_TO_EDGE, GL_LINEAR);
+	glObjectLabel( GL_TEXTURE, pressureTextureA, strlen( "pressure A" ), "pressure A" );
 	pressureTextureB = build3DTexture(GL_RGBA16F, GL_RGBA, SIMULATION_WIDTH, SIMULATION_HEIGHT, SIMULATION_DEPTH, GL_HALF_FLOAT, emptyData, GL_CLAMP_TO_EDGE, GL_LINEAR);
+	glObjectLabel( GL_TEXTURE, pressureTextureB, strlen( "pressure B" ), "pressure B" );
 	phin1hatTexture = build3DTexture(GL_RGBA16F, GL_RGBA, SIMULATION_WIDTH, SIMULATION_HEIGHT, SIMULATION_DEPTH, GL_HALF_FLOAT, emptyData, GL_CLAMP_TO_EDGE, GL_LINEAR);
+	glObjectLabel( GL_TEXTURE, phin1hatTexture, strlen( "phin1hat" ), "phin1hat" );
 	phinhatTexture = build3DTexture(GL_RGBA16F, GL_RGBA, SIMULATION_WIDTH, SIMULATION_HEIGHT, SIMULATION_DEPTH, GL_HALF_FLOAT, emptyData, GL_CLAMP_TO_EDGE, GL_LINEAR);
+	glObjectLabel( GL_TEXTURE, phinhatTexture, strlen( "phinhat" ), "phinhat" );
 	vorticityTexture = build3DTexture(GL_RGBA16F, GL_RGBA, SIMULATION_WIDTH, SIMULATION_HEIGHT, SIMULATION_DEPTH, GL_HALF_FLOAT, emptyData, GL_CLAMP_TO_EDGE, GL_LINEAR);
-
+	glObjectLabel( GL_TEXTURE, vorticityTexture, strlen( "vorticity" ), "vorticity" );
 	transparencyTexture = build3DTexture(GL_RGBA16F, GL_RGBA, SIMULATION_WIDTH, SIMULATION_HEIGHT, SIMULATION_DEPTH, GL_HALF_FLOAT, emptyData, GL_CLAMP_TO_EDGE, GL_LINEAR);
+	glObjectLabel( GL_TEXTURE, transparencyTexture, strlen( "transparency" ), "transparency" );
 
 	delete[] emptyData;
 
@@ -282,7 +294,8 @@ void update(double time, double deltaTime) {
 
 
 	// apply buoyancy /////
-
+#if 1
+	ph::Marker::push( "buoyancy" );
 	glUseProgram(buoyancyProgram);
 
 	glUniform3f(glGetUniformLocation(buoyancyProgram, "u_resolution"), SIMULATION_WIDTH, SIMULATION_HEIGHT, SIMULATION_DEPTH);
@@ -309,15 +322,17 @@ void update(double time, double deltaTime) {
 
 	advect(velocityTextureA, temperatureTextureA, temperatureTextureB, deltaTime, TEMPERATURE_DISSIPATION);
 	std::swap(temperatureTextureA, temperatureTextureB);
-
+	ph::Marker::push( "pop" );
 
 	// update MIDI //////
+#endif
 
 	float stamp;
 	std::vector<unsigned char> message;
 	static int i = 0;
 	//while (stamp = midiIn->getMessage(&message)) {
-	if( i++ % 30 == 0 ) {
+	//if( i++ % 30 == 0 ) {
+	if( i++ == 0 ) {
 		//unsigned int nBytes = message.size();
 
 		//unsigned char status = message.at(0);
@@ -327,7 +342,8 @@ void update(double time, double deltaTime) {
 			//unsigned char noteIndex = message.at(1);
 			//unsigned char velocity = message.at(2);
 
-			unsigned char noteIndex = i % 100;
+			//unsigned char noteIndex = i % 100;
+			unsigned char noteIndex = 40;
 			unsigned char velocity = 100;
 
 			if (status == 144 && velocity > 0) { //note pressed
@@ -347,7 +363,6 @@ void update(double time, double deltaTime) {
 			}
 		}
 	}
-
 
 	// add dye and temperature ///
 
@@ -386,6 +401,7 @@ void update(double time, double deltaTime) {
 		}
 	}
 
+	return;
 
 	// compute vorticity //////
 
