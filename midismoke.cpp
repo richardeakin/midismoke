@@ -401,8 +401,6 @@ void update(double time, double deltaTime) {
 		}
 	}
 
-	return;
-
 	// compute vorticity //////
 
 	glUseProgram(vorticityProgram);
