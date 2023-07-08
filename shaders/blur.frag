@@ -6,6 +6,8 @@ uniform int u_direction; //0 = horizontal, 1 = vertical
 
 uniform float u_blurSigma;
 
+out vec4 oFragColor;
+
 void main () {
 	vec2 coordinates = gl_FragCoord.xy / u_resolution.xy;
 
@@ -32,5 +34,5 @@ void main () {
 
 	total /= weight;
 
-	gl_FragColor = vec4(total, 1.0);
+	oFragColor = vec4(total, 1.0);
 }

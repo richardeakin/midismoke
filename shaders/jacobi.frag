@@ -2,12 +2,14 @@
 
 precision highp float;
 
-varying float v_layer;
+in float v_layer;
 
 uniform vec3 u_resolution;
 
 uniform sampler3D u_pressure;
 uniform sampler3D u_divergence;
+
+out vec4 oFragColor;
 
 void main () {
 	vec3 coordinates = vec3(gl_FragCoord.xy / u_resolution.xy, v_layer / u_resolution.z);
@@ -30,5 +32,5 @@ void main () {
 	if (coordinates.z - delta.z < 0.0) back = center;
 	if (coordinates.z + delta.z > 1.0) front = center;
 
-	gl_FragColor = vec4((left + right + bottom + top + back + front - divergenceCenter) / 6.0, 0.0, 0.0, 0.0);
+	oFragColor = vec4((left + right + bottom + top + back + front - divergenceCenter) / 6.0, 0.0, 0.0, 0.0);
 }

@@ -1,7 +1,7 @@
 
 precision highp float;
 
-varying float v_layer;
+in float v_layer;
 
 uniform vec3 u_resolution;
 
@@ -13,6 +13,8 @@ uniform float u_absorption;
 uniform float u_ambient;
 
 uniform float u_stepSize;
+
+out vec4 oFragColor;
 
 void main () {
 
@@ -39,6 +41,6 @@ void main () {
 
 	float transparency = exp(-totalDensity * u_absorption);
 
-	gl_FragColor = vec4(vec3(transparency) + u_ambient, 0.0);
+	oFragColor = vec4(vec3(transparency) + u_ambient, 0.0);
 	
 }

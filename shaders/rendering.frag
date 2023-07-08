@@ -14,6 +14,8 @@ uniform float u_colorScale;
 
 uniform float u_stepSize;
 
+out vec4 oFragColor;
+
 void main () {
 	vec3 cameraPosition = vec3(0.0, 0.0, u_cameraDistance);
 
@@ -49,5 +51,5 @@ void main () {
 
 	}
 
-	gl_FragColor = vec4(finalColor.rgb, 1.0);
+	oFragColor = vec4(finalColor.rgb, 1.0);
 }
